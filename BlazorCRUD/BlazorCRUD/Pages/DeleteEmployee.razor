@@ -1,0 +1,85 @@
+﻿@page "/DeleteEmployee/{CurrentID}"
+@using BlazorCRUD.Data
+@inject EmployeeService employeeService
+@inject NavigationManager navigationManager
+
+<h2>Delete Employee</h2>
+<hr />
+<h3>Are you sure you want to delete this information?</h3>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="form-group">
+      <label>Employee ID:</label>
+      <label>@employee.EmployeeId</label>
+    </div>
+    <div class="form-group">
+      <label>Name:</label>
+      <label>@employee.Name</label>
+    </div>
+    <div class="form-group">
+      <label>Gender:</label>
+      <label>@employee.Gender</label>
+    </div>
+    <div class="form-group">
+      <label>City:</label>
+      <label>@employee.City</label>
+    </div>
+    <div class="form-group">
+      <label>Country:</label>
+      <label>@employee.Country</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <input type="button" class="btn btn-danger" @onclick="@DeleteEmployeeInfo" value="Delete" />
+        <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+@code {
+
+  /// <summary>
+  /// Gets or sets the ID of the employee passed into this component as a parameter.
+  /// </summary>
+  [Parameter]
+  public string CurrentID { get; set; }
+
+  /// <summary>
+  /// Contains the data of an employee object to delete from the database.
+  /// </summary>
+  private EmployeeInfo employee = new EmployeeInfo();
+
+  /// <summary>
+  /// This method queries the database for an employee whose ID matches the
+  /// current ID passed into this razor component.
+  /// </summary>
+  /// <returns>An employee whose ID matches the given ID.</returns>
+  protected override async Task OnInitializedAsync()
+  {
+    employee = await Task.Run( () => employeeService.GetEmployeeById( Convert.ToInt32( CurrentID ) ) );
+  }
+
+  /// <summary>
+  /// This method is responsible for calling upon the
+  /// employee service to delete an employee.
+  /// </summary>
+  protected void DeleteEmployeeInfo()
+  {
+    employeeService.DeleteEmployeeInfo( employee );
+    navigationManager.NavigateTo( "Employee" );
+  }
+
+  /// <summary>
+  /// This method cancels the process of deleting an employee.
+  /// </summary>
+  private void Cancel()
+  {
+    navigationManager.NavigateTo( "Employee" );
+  }
+}

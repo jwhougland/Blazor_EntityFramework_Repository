@@ -1,0 +1,88 @@
+﻿@page "/EditEmployee/{CurrentID}"
+@using BlazorCRUD.Data
+@inject EmployeeService employeeService
+@inject NavigationManager navigationManager
+
+<h2>Update Employee</h2>
+<hr />
+
+<form>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="form-group">
+        <input for="Name" class="form-control" @bind="@employee.EmployeeId" />
+      </div>
+      <div class="form-group">
+        <label for="Name" class="control-label">Name</label>
+        <input form="Name" class="form-control" @bind="@employee.Name" />
+      </div>
+      <div class="form-group">
+        <label for="Gender" class="control-label"></label>
+        <select name="Gender" class="form-control" @bind="@employee.Gender">
+          <option value="">--Select Gender --</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="Country" class="control-label">Country</label>
+        <input form="Country" class="form-control" @bind="@employee.Country" />
+      </div>
+      <div class="form-group">
+        <label for="City" class="control-label">City</label>
+        <input form="City" class="form-control" @bind="@employee.City" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <input type="button" class="btn btn-primary" @onclick="@UpdateEmployee" value="Update" />
+        <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+      </div>
+    </div>
+  </div>
+</form>
+
+
+@code {
+
+  /// <summary>
+  /// Gets or sets the ID of the employee passed into this component as a parameter.
+  /// </summary>
+  [Parameter]
+  public string CurrentID { get; set; }
+
+  /// <summary>
+  /// Contains the data of an employee object to update in the database.
+  /// </summary>  
+  private EmployeeInfo employee = new EmployeeInfo();
+
+  /// <summary>
+  /// This method queries the database for an employee whose ID matches the
+  /// current ID passed into this razor component.
+  /// </summary>
+  /// <returns>An employee whose ID matches the given ID.</returns>
+  protected override async Task OnInitializedAsync()
+  {
+    employee = await Task.Run( () => employeeService.GetEmployeeById( Convert.ToInt32( CurrentID ) ) );
+  }
+
+  /// <summary>
+  /// This method is responsible for calling upon the
+  /// employee service to update an employee.
+  /// </summary>
+  protected void UpdateEmployee()
+  {
+    employeeService.UpdateEmployee( employee );
+    navigationManager.NavigateTo( "Employee" );
+  }
+
+  /// <summary>
+  /// This method cancels the process of updating an employee.
+  /// </summary>
+  private void Cancel()
+  {
+    navigationManager.NavigateTo( "Employee" );
+  }
+}
